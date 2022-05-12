@@ -1,10 +1,10 @@
-import {useState, useRef, useEffect} from 'react'
-import styled, {css} from 'styled-components'
-import {ArrowDropDownIcon, Box, BoxProps, Text} from '@pancakeswap/uikit'
+import {useState, useRef, useEffect} from "react"
+import styled, {css} from "styled-components"
+import {ArrowDropDownIcon, Box, Text} from "@pancakeswap/uikit"
 
 const DropDownHeader = styled.div`
   width: 100%;
-  height: 50px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -39,14 +39,14 @@ const DropDownContainer = styled(Box)`
   position: relative;
   background: ${({theme}) => theme.colors.input};
   border-radius: 16px;
-  height: 50px;
+  height: 40px;
   min-width: 136px;
   user-select: none;
   z-index: 20;
   ${({theme}) => theme.mediaQueries.sm} {
     min-width: 168px;
   }
-  ${(props) =>
+  ${props =>
     props.isOpen &&
     css`
       ${DropDownHeader} {
@@ -87,41 +87,26 @@ const ListItem = styled.li`
   }
 `
 
-// export function SelectProps (BoxProps) {
-//     OptionProps[]
-//     onOptionChange? (OptionProps) => void
-//         placeHolderText?
-//     defaultOptionIndex?
-// }
-
-// export function OptionProps() {
-//     [
-//
-//             label: string,
-//             value: any
-//
-//     ]
-// }
-
 const Select = ({
                     options,
                     onOptionChange,
                     defaultOptionIndex = 0,
-
                     placeHolderText,
                     ...props
                 }) => {
     const dropdownRef = useRef(null)
     const [isOpen, setIsOpen] = useState(false)
     const [optionSelected, setOptionSelected] = useState(false)
-    const [selectedOptionIndex, setSelectedOptionIndex] = useState(defaultOptionIndex)
+    const [selectedOptionIndex, setSelectedOptionIndex] = useState(
+        defaultOptionIndex
+    )
 
-    const toggling = (event) => {
+    const toggling = event => {
         setIsOpen(!isOpen)
         event.stopPropagation()
     }
 
-    const onOptionClicked = (selectedIndex) => () => {
+    const onOptionClicked = selectedIndex => () => {
         setSelectedOptionIndex(selectedIndex)
         setIsOpen(false)
         setOptionSelected(true)
@@ -136,17 +121,19 @@ const Select = ({
             setIsOpen(false)
         }
 
-        document.addEventListener('click', handleClickOutside)
+        document.addEventListener("click", handleClickOutside)
         return () => {
-            document.removeEventListener('click', handleClickOutside)
+            document.removeEventListener("click", handleClickOutside)
         }
     }, [])
 
     return (
         <DropDownContainer isOpen={isOpen} {...props}>
             <DropDownHeader onClick={toggling}>
-                <Text color={!optionSelected && placeHolderText ? 'text' : undefined}>
-                    {!optionSelected && placeHolderText ? placeHolderText : options[selectedOptionIndex].label}
+                <Text color={!optionSelected && placeHolderText ? "text" : undefined}>
+                    {!optionSelected && placeHolderText
+                        ? placeHolderText
+                        : options[selectedOptionIndex].label}
                 </Text>
             </DropDownHeader>
             <ArrowDropDownIcon color="text" onClick={toggling}/>
@@ -157,7 +144,7 @@ const Select = ({
                             <ListItem onClick={onOptionClicked(index)} key={option.label}>
                                 <Text>{option.label}</Text>
                             </ListItem>
-                        ) : null,
+                        ) : null
                     )}
                 </DropDownList>
             </DropDownListContainer>

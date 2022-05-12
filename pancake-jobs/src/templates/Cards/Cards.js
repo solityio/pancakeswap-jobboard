@@ -3,32 +3,36 @@ import Style from './Cards.module.scss';
 import {useDispatch, useSelector} from "react-redux";
 import {getCards} from "../../store/actions/cards";
 import BaseCard from "../../components/BaseCard";
-import {Input, SearchIcon, CardsLayout, Toggle} from "@pancakeswap/uikit";
+import {Input, SearchIcon, CardsLayout, Toggle, Slider} from "@pancakeswap/uikit";
 import Select from "../../components/Select/Select";
+import {arrType} from "../../constants/filter";
 
 
 const Cards = () => {
     const cards = useSelector((state) => state?.rootReducer.cards.records);
     const [cardList, setCardList] = useState(cards);
     const [filterByName, setFilterByName] = useState('');
-    const [filterJoType, setFilterJoType] = useState([]);
+    const [filterToType, setFilterToType] = useState();
+    const [filterToSalary, setFilterToSalary] = useState(355.000);
     const [isChecked, setIsChecked] = useState(false);
 
 
     const dispatch = useDispatch();
     const isCardList = !!cardList?.length;
+
     useEffect(() => {
         dispatch(getCards());
     }, []);
 
     useEffect(() => {
         setCardList(cards?.filter(customFilter))
-    }, [cards, filterByName, filterJoType])
+    }, [cards, filterByName, filterToType, filterToSalary])
 
     const toggle = () => setIsChecked(!isChecked);
     const customFilter = (item) => {
         let isName = false;
         let isType = false;
+        let isSalary = false;
 
         if (filterByName?.toLowerCase()?.length > 2) {
             isName = item?.fields?.Name?.toLowerCase().includes(filterByName?.toLowerCase())
@@ -36,26 +40,38 @@ const Cards = () => {
             isName = true;
         }
 
-        if (filterJoType?.length) {
-            isType = filterJoType.some(itemClass => item?.fields['Job Type'].includes(itemClass))
-        } else {
+        if (item.fields['Job Type'] == filterToType || filterToType == 'Job type' || !filterToType) {
             isType = true;
         }
 
-        return isName && isType;
+        if (filterToSalary?.length) {
+            isSalary = item?.fields?.Salary > parseInt(filterToSalary, 10)
+            console.log(item?.fields?.Salary)
+        } else {
+            isSalary = true;
+        }
+
+        // cards.filter( item => { return item?.fields?.Salary > parseInt(price, 10) }).map( hotel => {
+        //     return <p key={hotel.name}>{ hotel.name } | { hotel.price } &euro; </p>
+        // })
+
+        return isName && isType && isSalary;
+
     }
 
     const handleSearch = (e) => {
         setFilterByName(e?.target?.value)
     };
 
+    const handleSortType = (option) => {
+        setFilterToType(option.value)
+    }
 
 
-    const handleSortOptionChange = (event, value) => {
-        setFilterJoType(value)
-    };
-
-
+    const handleSortSalary =(e)=>{
+        setFilterToSalary( e.value );
+        console.log(e.value )
+    }
 
     return (
         <>
@@ -67,21 +83,20 @@ const Cards = () => {
                 </div>
 
                 <CardsLayout>
-
                     <Select
-                        options={[
-
-                            {
-                                value: 'Full Time',
-                                label: 'Full Time'
-                            },{
-                                value: 'Freelance',
-                                label: 'Freelance'
-                            },
-                        ]}
-                        onOptionChange={handleSortOptionChange}
+                        options={arrType}
+                        onOptionChange={handleSortType}
                     />
-                    <div className={`${Style.wrap} ${Style.toggle}`}>
+                    <div className={`${Style.wrap} `}>
+                        $0/yr
+                        <Slider
+                            min={0}
+                            max={1000}
+                            onValueChanged={handleSortSalary}
+                        />
+                        ${filterToSalary}/yr
+                    </div>
+                    <div className={`${Style.wrap} `}>
                         <Toggle checked={isChecked} onChange={toggle} scale="sm"/>
                         <p>Option to pay in crypto</p>
                     </div>

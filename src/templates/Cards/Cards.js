@@ -51,7 +51,6 @@ const Cards = () => {
 
 
         if (item?.fields?.Salary < filterToSalary) {
-            console.log('log ' + filterToSalary)
             isSalary = true;
         }
 
@@ -102,7 +101,7 @@ const Cards = () => {
                         $0/yr
                         <PrettoSlider
                             key={`slider-${maxSliderValue}`}
-                            valueLabelDisplay="auto" //label on
+                            //valueLabelDisplay="auto" //label on
                             aria-label="pretto slider"
                             defaultValue={maxSliderValue}
                             min={0}
